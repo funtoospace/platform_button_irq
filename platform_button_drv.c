@@ -163,7 +163,7 @@ static ssize_t platform_button_write(struct file *filp, const char __user *buf, 
 	}
 */
 	printk(KERN_INFO "copy_from_user begin\n");
-	copy_from_user(&val, buf, count); //	copy_to_user();
+	copy_from_user(&val, buf, count); //	copy_from_user();
 	printk(KERN_INFO "copy_from_user end\n");
 
 	if (val == 1)
