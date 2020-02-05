@@ -18,11 +18,11 @@
 #include <asm/hardware.h>
 
 
-volatile unsigned long *gpfcon = NULL;
-volatile unsigned long *gpfdat = NULL;
+//volatile unsigned long *gpfcon = NULL;
+//volatile unsigned long *gpfdat = NULL;
 
-volatile unsigned long *gpgcon = NULL;
-volatile unsigned long *gpgdat = NULL;
+//volatile unsigned long *gpgcon = NULL;
+//volatile unsigned long *gpgdat = NULL;
 
 
 static DECLARE_WAIT_QUEUE_HEAD(button_waitq);
@@ -70,12 +70,18 @@ static irqreturn_t buttons_irq(int irq, void *dev_id)
 	if(pinval)
 	{
 		key_state = 0x80 | pindesc->key_val;
-		*gpfdat &= ~((1<<4) | (1<<5) | (1<<6));
+		//*gpfdat &= ~((1<<4) | (1<<5) | (1<<6));
+		s3c2410_gpio_setpin(S3C2410_GPF4, 0);
+		s3c2410_gpio_setpin(S3C2410_GPF5, 0);
+		s3c2410_gpio_setpin(S3C2410_GPF6, 0);
 	}
 	else
 	{
 		key_state = pindesc->key_val;
-		*gpfdat |= (1<<4) | (1<<5) | (1<<6);
+		//*gpfdat |= (1<<4) | (1<<5) | (1<<6);
+		s3c2410_gpio_setpin(S3C2410_GPF4, 1);
+		s3c2410_gpio_setpin(S3C2410_GPF5, 1);
+		s3c2410_gpio_setpin(S3C2410_GPF6, 1);
 	}
 
 	ev_press = 1;
@@ -91,8 +97,11 @@ static int platform_button_open(struct inode *inode, struct file *filp)
 
 	printk("platform_button_open\n");
 	/* 配置GPF4,5,6为输出 中文 */
-	*gpfcon &= ~((0x3<<(4*2)) | (0x3<<(5*2)) | (0x3<<(6*2)));
-	*gpfcon |= ((0x1<<(4*2)) | (0x1<<(5*2)) | (0x1<<(6*2)));
+	//*gpfcon &= ~((0x3<<(4*2)) | (0x3<<(5*2)) | (0x3<<(6*2)));
+	//*gpfcon |= ((0x1<<(4*2)) | (0x1<<(5*2)) | (0x1<<(6*2)));
+	s3c2410_gpio_cfgpin(S3C2410_GPF4, S3C2410_GPF4_OUTP);
+	s3c2410_gpio_cfgpin(S3C2410_GPF5, S3C2410_GPF5_OUTP);
+	s3c2410_gpio_cfgpin(S3C2410_GPF6, S3C2410_GPF6_OUTP);
 	//request_irq(IRQ_EINT0,  buttons_irq, IRQT_BOTHEDGE, "S2", &pins_desc[0]);
 	//request_irq(IRQ_EINT2,  buttons_irq, IRQT_BOTHEDGE, "S3", &pins_desc[1]);
 	request_irq(IRQ_EINT11, buttons_irq, IRQT_BOTHEDGE, "S4", &pins_desc[0]);
@@ -169,14 +178,20 @@ static ssize_t platform_button_write(struct file *filp, const char __user *buf, 
 	if (val == 1)
 	{
 		// 点灯
-		*gpfdat &= ~((1<<4) | (1<<5) | (1<<6));
+		//*gpfdat &= ~((1<<4) | (1<<5) | (1<<6));
+		s3c2410_gpio_setpin(S3C2410_GPF4, 0);
+		s3c2410_gpio_setpin(S3C2410_GPF5, 0);
+		s3c2410_gpio_setpin(S3C2410_GPF6, 0);
 		dev->flag = 1;
 		wake_up_interruptible(&dev->r_wait);
 	}
 	else
 	{
 		// 灭灯
-		*gpfdat |= (1<<4) | (1<<5) | (1<<6);
+		//*gpfdat |= (1<<4) | (1<<5) | (1<<6);
+		s3c2410_gpio_setpin(S3C2410_GPF4, 1);
+		s3c2410_gpio_setpin(S3C2410_GPF5, 1);
+		s3c2410_gpio_setpin(S3C2410_GPF6, 1);
 		dev->flag = 0;
 	}
 	
@@ -317,11 +332,11 @@ static int platform_button_probe(struct platform_device *pdev)
 	if (ret < 0)
 		goto err;
 
-	gpfcon = (volatile unsigned long *)ioremap(0x56000050, 16);
-	gpfdat = gpfcon + 1;
+	//gpfcon = (volatile unsigned long *)ioremap(0x56000050, 16);
+	//gpfdat = gpfcon + 1;
 	
-	gpgcon = (volatile unsigned long *)ioremap(0x56000060, 16);
-	gpgdat = gpgcon + 1;
+	//gpgcon = (volatile unsigned long *)ioremap(0x56000060, 16);
+	//gpgdat = gpgcon + 1;
 
 	dev_info(&pdev->dev, "platform_button drv probed\n");
 
@@ -338,8 +353,8 @@ static int platform_button_remove(struct platform_device *pdev)
 
 	dev_info(&pdev->dev, "platform_button dev removed\n");
 
-	iounmap(gpfcon);
-	iounmap(gpgcon);
+	//iounmap(gpfcon);
+	//iounmap(gpgcon);
 
 	return 0;
 }
