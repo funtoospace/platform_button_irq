@@ -3,7 +3,7 @@
  *
  *    Projectname:  platform_button_irq
  *
- *    Description:  Create button driver with irq under platform bus.
+ *    Description:  Create button driver with irq under platform bus, gpio version.
  *
  *        Version:  1.0
  *        Created:  02/03/2020 21:20:30 AM
