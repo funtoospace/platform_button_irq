@@ -235,13 +235,11 @@ static ssize_t platform_button_read(struct file *filp, char __user *buf, size_t 
 	/*
 	if (*gpfdat & ((1<<4) | (1<<5) | (1<<6)))
 	{
-		// µãµÆ
 		val = 0;
 		printk(KERN_INFO "\nval = %d\n", val);
 	}
 	else
 	{
-		// ÃðµÆ
 		val = 1;
 		printk(KERN_INFO "\nval = %d\n", val);
 	}
